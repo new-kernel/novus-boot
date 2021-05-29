@@ -1,0 +1,10 @@
+[package]
+name = "novus_boot"
+version = "1.0.0"
+authors = ["Philipp Oppermann <dev@phil-opp.com>", "Nathan McMillan <nathanmcmillan54@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+colour = "0.6.0"
+fatfs = "0.3.5"
+gpt = "2.0.0"
