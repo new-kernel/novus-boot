@@ -9,7 +9,7 @@ sh build.sh
 
 Usage:
 ```commandline
-novus_boot <path_to_efi_bin>
+novus_boot <path_to_efi_bin> <architecture_for_os>
 ```
 
 ---
