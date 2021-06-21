@@ -2,9 +2,11 @@
 
 A bootloader intended for UEFI [Novusk](https://github.com/NathanMcMillan54/novusk)
 
+``boot/`` - A bootloader for UEFI apps, kernels, OSes, etc...
+
 ``command/`` - For creating bootable UEFI images
 
-``boot/`` - A bootloader for UEFI apps, kernels, OSes, etc...
+``example/`` - Example UEFI OS
 
 ### Command:
 
