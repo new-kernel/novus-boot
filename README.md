@@ -1,10 +1,16 @@
 # Novus Boot
 
-A bootloader for x86 and Aarch64 Novusk or UEFI applications
+A bootloader intended for UEFI [Novusk](https://github.com/NathanMcMillan54/novusk)
+
+``command/`` - For creating bootable UEFI images
+
+``boot/`` - A bootloader for UEFI apps, kernels, OSes, etc...
+
+### Command:
 
 Build:
 ```commandline
-sh build.sh
+cd command/ && sh build.sh
 ```
 
 Usage:
@@ -12,6 +18,6 @@ Usage:
 novus_boot <path_to_efi_bin> <architecture_for_os>
 ```
 
----
+### Bootloader:
 
-Copied and edited from https://github.com/phil-opp/blog_os/blob/edition-3/blog/content/edition-3/posts/02-booting/uefi/index.md
+---

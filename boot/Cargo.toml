@@ -1,0 +1,9 @@
+[package]
+name = "novus-boot"
+version = "1.0.0"
+edition = "2018"
+description = "New boot, a bootloader for UEFI apps, kernels, OSes, etc... Intended for UEFI Novusk"
+
+[dependencies]
+uefi = "0.8.1"
+uefi-services = "0.5.1"

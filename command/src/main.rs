@@ -29,7 +29,7 @@ fn create_fat_filesystem(fat_path: &Path, efi_file: &Path, arch: String) {
     root_dir.create_dir("efi").unwrap();
     root_dir.create_dir("efi/boot").unwrap();
     if arch == String::from("x86") {
-        let mut bootx64 = root_dir.create_file("efi/boot/bootx64.efi").unwrap();
+        let mut bootx64 = root_dir.create_file("efi/boot/BOOTX64.efi").unwrap();
         bootx64.truncate().unwrap();
         io::copy(&mut fs::File::open(&efi_file).unwrap(), &mut bootx64).unwrap();
     } else if arch == String::from("aarch64") {
