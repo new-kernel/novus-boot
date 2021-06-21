@@ -1,7 +1,8 @@
 use core::fmt::Write;
 use crate::error::error;
-use crate::proto;
+use crate::{kernel, proto};
 use uefi::{Handle, ResultExt};
+use uefi::proto::console::text::Color;
 use uefi::table::{Boot, SystemTable};
 use uefi_services::system_table;
 
@@ -18,6 +19,7 @@ pub extern "C" fn efi_main(handle: Handle, system_table: SystemTable<Boot>) -> !
     uefi_services::init(&system_table);
 
     system_table.stdout().reset(false).expect_success("Failed to reset stdout");
+    system_table.stdout().set_color(Color::White, Color::Black);
 
     let bootloader_version = env!("CARGO_PKG_VERSION");
 
@@ -28,5 +30,5 @@ pub extern "C" fn efi_main(handle: Handle, system_table: SystemTable<Boot>) -> !
     info!("Protocall setup finished");
     unsafe { print_info(); }
 
-    loop {  }
+    unsafe { kernel::setup(handle); }
 }

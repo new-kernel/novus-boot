@@ -4,4 +4,5 @@
 
 pub mod boot;
 pub(crate) mod error;
+pub mod kernel;
 pub(crate) mod proto;
