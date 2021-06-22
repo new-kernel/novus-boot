@@ -1,3 +1,5 @@
+use crate::error::error;
+use crate::proto::fs::INIT;
 use crate::proto::graphics::gop_init;
 use uefi::Handle;
 use uefi::proto::console::gop::{BltOp, BltPixel};
@@ -26,5 +28,10 @@ pub unsafe fn setup(image: Handle) -> ! {
     system_table().as_ref().stdout().set_color(Color::White, Color::Cyan);
 
     info!("Setting up kernel...");
+    if INIT == false {
+        error("Couldn't initialize FAT file system, can't start kernel");
+        loop {  }
+    } else { info!("FAT fs is ok, loadin kernel..."); }
+
     start_kernel()
 }
