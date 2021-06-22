@@ -1,4 +1,5 @@
 use core::fmt::Write;
+use core::slice;
 use crate::error::error;
 use crate::proto::fs::INIT;
 use crate::proto::graphics::gop_init;
@@ -6,9 +7,11 @@ use uefi::{Handle, ResultExt};
 use uefi::prelude::BootServices;
 use uefi::proto::console::gop::{BltOp, BltPixel};
 use uefi::proto::console::text::Color;
-use uefi::proto::media::file::{File, FileAttribute, FileMode, FileSystemVolumeLabel};
+use uefi::proto::media::file::{File, FileAttribute, FileInfo, FileMode, FileSystemVolumeLabel, RegularFile};
 use uefi::proto::media::fs::SimpleFileSystem;
+use uefi::table::boot::{AllocateType, MemoryType};
 use uefi_services::system_table;
+use xmas_elf::ElfFile;
 
 unsafe fn start_kernel() -> ! {
     loop {  }
@@ -34,6 +37,20 @@ unsafe fn load_kernel(bs: &BootServices) {
 
     let kernel_file_handle = root.open(kernel_file, FileMode::Read, FileAttribute::empty())
         .expect_success("Failed to open kernel file");
+
+    let mut kernel_file_handle = RegularFile::new(kernel_file_handle);
+
+    let info = kernel_file_handle.get_info::<FileInfo>(&mut buffer)
+        .expect_success("Failed to get info");
+
+    let pages = info.file_size() as usize / 0x1000 + 1;
+    let mem_start = system_table().as_ref().boot_services().allocate_pages(AllocateType::AnyPages, MemoryType::LOADER_DATA, pages)
+        .expect("Failed to allocate pages").unwrap();
+
+    let buf = slice::from_raw_parts_mut(mem_start as *mut u8, pages * 0x1000);
+    let len: usize = kernel_file_handle.read(buf).expect_success("Failed to read file");
+    let elf = ElfFile::new(buf[..len].as_ref()).expect("Failed to parse ELF");
+    let kernel_entry_address = elf.header.pt2.entry_point();
 }
 
 fn fill_screen() {

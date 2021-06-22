@@ -8,3 +8,4 @@ description = "New boot, a bootloader for UEFI apps, kernels, OSes, etc... Inten
 log = { version = "0.4.14", default-features = false }
 uefi = { version = "0.8.1", features = ["alloc"] }
 uefi-services = "0.5.1"
+xmas-elf = "0.8.0"
