@@ -31,7 +31,7 @@ pub unsafe fn setup(image: Handle) -> ! {
     if INIT == false {
         error("Couldn't initialize FAT file system, can't start kernel");
         loop {  }
-    } else { info!("FAT fs is ok, loadin kernel..."); }
+    } else { info!("FAT fs is ok, loading kernel..."); }
 
     start_kernel()
 }

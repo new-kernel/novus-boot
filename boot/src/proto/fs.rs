@@ -1,4 +1,3 @@
-use alloc::{vec, vec::Vec};
 use crate::error::error;
 use uefi::prelude::BootServices;
 use uefi::table::{Boot, SystemTable};
@@ -11,10 +10,10 @@ pub unsafe fn fs_init(bs: &BootServices) -> Directory {
     if let Ok(sfs) = bs.locate_protocol::<SimpleFileSystem>() {
         let sfs = sfs.expect("Cannot open `SimpleFileSystem` protocol");
         let sfs = unsafe { &mut *sfs.get() };
-        let mut root = sfs.open_volume().unwrap().unwrap();
         let mut buffer = vec![0; 128];
+        let mut root = sfs.open_volume().unwrap().unwrap();
         loop {
-            let file_info = match root.read_entry(&mut buffer) {
+            let file_info = match root.read_entry(&mut [0; 128]) {
                 Ok(completion) => {
                     if let Some(info) = completion.unwrap() {
                         info
