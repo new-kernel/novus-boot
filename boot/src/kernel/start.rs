@@ -1,5 +1,6 @@
 use core::fmt::Write;
 use core::slice;
+use super::types::*;
 use crate::error::error;
 use crate::proto::fs::INIT;
 use crate::proto::graphics::gop_init;
@@ -12,12 +13,13 @@ use uefi::proto::media::fs::SimpleFileSystem;
 use uefi::table::boot::{AllocateType, MemoryType};
 use uefi_services::system_table;
 use xmas_elf::ElfFile;
+use x86_64::VirtAddr;
 
 unsafe fn start_kernel() -> ! {
     loop {  }
 }
 
-unsafe fn load_kernel(bs: &BootServices) {
+unsafe fn load_kernel(bs: &BootServices) -> (ElfFile, KernelEntry) {
     let kernel_file = r"efi/boot/kernel.elf";
     let mut buffer = [0u8; 0x100];
 
@@ -29,14 +31,7 @@ unsafe fn load_kernel(bs: &BootServices) {
     let mut root = fs.open_volume()
         .expect_success("Cannot open volumes");
 
-    let volume_label = fs.open_volume()
-        .expect_success("Failed to open volume")
-        .get_info::<FileSystemVolumeLabel>(&mut buffer)
-        .expect_success("Failed to open volumes")
-        .volume_label();
-
-    let kernel_file_handle = root.open(kernel_file, FileMode::Read, FileAttribute::empty())
-        .expect_success("Failed to open kernel file");
+    let kernel_file_handle = root.open(kernel_file, FileMode::Read, FileAttribute::empty()).unwrap().unwrap();
 
     let mut kernel_file_handle = RegularFile::new(kernel_file_handle);
 
@@ -51,6 +46,9 @@ unsafe fn load_kernel(bs: &BootServices) {
     let len: usize = kernel_file_handle.read(buf).expect_success("Failed to read file");
     let elf = ElfFile::new(buf[..len].as_ref()).expect("Failed to parse ELF");
     let kernel_entry_address = elf.header.pt2.entry_point();
+    let kernel_entry: KernelEntry = KernelEntry(VirtAddr::new(kernel_entry_address));
+
+    return (elf, kernel_entry);
 }
 
 fn fill_screen() {
@@ -81,7 +79,10 @@ pub unsafe fn setup(image: Handle) -> ! {
         loop {  }
     } else { info!("FAT fs is ok, loading kernel..."); }
 
-    //let (efi, kenrel_entry) = load_kernel(system_table().as_ref().boot_services());
+    let (efi, kenrel_entry) = load_kernel(system_table().as_ref().boot_services());
+    info!("Kernel loaded");
+    info!("Got kernel file, address, and entry");
+    info!("Leaving UEFI boot services and starting kernel...");
 
     start_kernel();
 }

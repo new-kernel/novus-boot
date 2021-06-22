@@ -42,7 +42,7 @@ fn create_fat_filesystem(kernel_path: &Path, fat_path: &Path, efi_file: &Path, a
     }
 
     // Copy EFI kernel to the boot directory
-    let mut kernel = root_dir.create_file("efi/boot/kernel.efi").unwrap();
+    let mut kernel = root_dir.create_file("efi/boot/kernel.elf").unwrap();
     kernel.truncate().unwrap();
     io::copy(&mut fs::File::open(&kernel_path).unwrap(), &mut kernel).unwrap();
 }

@@ -30,5 +30,5 @@ pub extern "C" fn efi_main(handle: Handle, system_table: SystemTable<Boot>) -> !
     info!("Protocall setup finished");
     unsafe { print_info(); }
 
-    unsafe { kernel::setup(handle); }
+    unsafe { kernel::start::setup(handle); }
 }
