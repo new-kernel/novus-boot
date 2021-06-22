@@ -21,22 +21,17 @@ novus_boot <path_to_efi_bootloader> <path_to_efi_kernel> <architecture_for_os>
 ```
 
 ### Bootloader:
-
-Cargo.toml:
-```toml
-[dependencies]
-novus-boot = "1.0.0"
+image.sh:
+```shell
+cargo build --my-target.json
+mv target/my-target/debug/mykernel boot/mykernel.elf
+cd boot && novus_boot mykernel.elf novus_boot.efi <arch-family>
 ```
 
-src/main.rs:
-```rust
-#![no_std]
-#![no_main]
-
-pub extern crate novus_boot;
-
-#[no_mangle]
-pub extern "C" fn main() -> ! {
-    loop {  }
-}
+Boot:
+```commandline
+boot/
+|----.gitignore
+|----novus_boot.efi
+|----mykernel.elf
 ```
