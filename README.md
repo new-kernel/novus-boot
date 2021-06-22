@@ -17,9 +17,26 @@ cd command/ && sh build.sh
 
 Usage:
 ```commandline
-novus_boot <path_to_efi_bin> <architecture_for_os>
+novus_boot <path_to_efi_bootloader> <path_to_efi_kernel> <architecture_for_os>
 ```
 
 ### Bootloader:
 
----
+Cargo.toml:
+```toml
+[dependencies]
+novus-boot = "1.0.0"
+```
+
+src/main.rs:
+```rust
+#![no_std]
+#![no_main]
+
+pub extern crate novus_boot;
+
+#[no_mangle]
+pub extern "C" fn main() -> ! {
+    loop {  }
+}
+```

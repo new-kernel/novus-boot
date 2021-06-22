@@ -2,7 +2,7 @@
 
 use std::{fs, io, path::Path};
 
-fn create_fat_filesystem(fat_path: &Path, efi_file: &Path, arch: String) {
+fn create_fat_filesystem(kernel_path: &Path, fat_path: &Path, efi_file: &Path, arch: String) {
     // retrieve size of `.efi` file and round it up
     let efi_size = fs::metadata(&efi_file).unwrap().len();
     let mb = 1024 * 1024; // size of a megabyte
@@ -40,6 +40,11 @@ fn create_fat_filesystem(fat_path: &Path, efi_file: &Path, arch: String) {
         red_ln!("{} - Not a supported architecture, use 'aarch64' or 'x86'");
         exit(0);
     }
+
+    // Copy EFI kernel to the boot directory
+    let mut kernel = root_dir.create_file("efi/boot/kernel.efi").unwrap();
+    kernel.truncate().unwrap();
+    io::copy(&mut fs::File::open(&kernel_path).unwrap(), &mut kernel).unwrap();
 }
 
 use std::{convert::TryFrom, fs::File, io::Seek};
@@ -100,6 +105,8 @@ fn main() {
     // take efi file path as command line argument
     let mut args = std::env::args();
     let _exe_name = args.next().unwrap();
+    let kernel_path = PathBuf::from(args.next()
+        .expect("path to .efi files must be given an argument"));
     let efi_path = PathBuf::from(args.next()
         .expect("path to `.efi` files must be given as argument"));
 
@@ -111,7 +118,7 @@ fn main() {
     let disk_path = fat_path.with_extension("img");
 
     println!("Creating FAT file system...");
-    create_fat_filesystem(&fat_path, &efi_path, arch);
+    create_fat_filesystem(&kernel_path, &fat_path, &efi_path, arch);
     println!("Creating GPT disk...");
     create_gpt_disk(&disk_path, &fat_path);
 

@@ -1,8 +1,10 @@
+use core::fmt::Write;
 use crate::error::error;
 use uefi::prelude::BootServices;
 use uefi::table::{Boot, SystemTable};
 use uefi::proto::media::fs::SimpleFileSystem;
 use uefi::proto::media::file::{Directory, File};
+use uefi_services::system_table;
 
 pub static mut INIT: bool = true;
 
@@ -16,6 +18,7 @@ pub unsafe fn fs_init(bs: &BootServices) -> Directory {
             let file_info = match root.read_entry(&mut [0; 128]) {
                 Ok(completion) => {
                     if let Some(info) = completion.unwrap() {
+                        info!("Root directory:\n{:?}", info);
                         info
                     } else {
                         break
