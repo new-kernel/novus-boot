@@ -1,0 +1,20 @@
+[package]
+name = "novus_boot"
+version = "1.0.0"
+authors = ["Nathan McMillan <nathanmcmillan54@gmail.com>"]
+edition = "2018"
+
+[workspace]
+members = [
+    "novus-image/",
+]
+exclude = [
+    "novus-image/",
+]
+
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+x86 = { git = "https://github.com/NathanMcMillan54/rust-x86/" }
+x86_64 = "0.14.4"
+
+[features]
+bios = []
