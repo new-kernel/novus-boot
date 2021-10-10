@@ -23,6 +23,12 @@ uefi-services = "0.9.0"
 log = "0.4.14"
 rlibc = "1.0.0"
 
+[workspace]
+members = [
+    "tools/gen-uefi-image/",
+]
+exclude = "tools/gen-uefi-image/"
+
 [features]
 default = []
 bios_boot = []
