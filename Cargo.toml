@@ -4,17 +4,26 @@ version = "1.0.0"
 authors = ["Nathan McMillan <nathanmcmillan54@gmail.com>"]
 edition = "2018"
 
-[workspace]
-members = [
-    "novus-image/",
-]
-exclude = [
-    "novus-image/",
-]
+[lib]
+name = "novus_boot"
+edition = "2018"
+path = "src/lib.rs"
 
-[target.'cfg(target_arch = "x86_64")'.dependencies]
-x86 = { git = "https://github.com/NathanMcMillan54/rust-x86/" }
-x86_64 = "0.14.4"
+[[bin]]
+name = "novus_boot_loader"
+edition = "2018"
+path = "src/main.rs"
+
+
+[target.'cfg(any(target_arch = "aarch64", target_arch = "x86_64", target_arch = "x86"))'.dependencies]
+uefi = "0.12.0"
+uefi-services = "0.9.0"
+
+[dependencies]
+log = "0.4.14"
+rlibc = "1.0.0"
 
 [features]
-bios = []
+default = []
+bios_boot = []
+uefi_boot = []
