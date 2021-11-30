@@ -1,0 +1,8 @@
+[package]
+name = "gen_image"
+version = "0.1.0"
+edition = "2018"
+
+
+[dependencies]
+fatfs = { version = "0.3.5", default-features = true }

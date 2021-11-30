@@ -4,16 +4,15 @@ version = "1.0.0"
 authors = ["Nathan McMillan <nathanmcmillan54@gmail.com>"]
 edition = "2018"
 
-[lib]
-name = "novus_boot"
-edition = "2018"
-path = "src/lib.rs"
-
 [[bin]]
 name = "novus_boot_loader"
 edition = "2018"
 path = "src/main.rs"
 
+[workspace]
+members = [
+    "gen_image/",
+]
 
 [target.'cfg(any(target_arch = "aarch64", target_arch = "x86_64", target_arch = "x86"))'.dependencies]
 uefi = "0.12.0"
@@ -23,13 +22,5 @@ uefi-services = "0.9.0"
 log = "0.4.14"
 rlibc = "1.0.0"
 
-[workspace]
-members = [
-    "tools/gen-uefi-image/",
-]
-exclude = "tools/gen-uefi-image/"
-
 [features]
 default = []
-bios_boot = []
-uefi_boot = []
