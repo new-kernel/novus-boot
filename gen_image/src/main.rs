@@ -27,12 +27,8 @@ fn create_fat_filesystem(fat_path: &Path, efi_file: &Path, kernel_file: &Path, a
     root_dir.create_dir("efi").unwrap();
     root_dir.create_dir("efi/boot").unwrap();
 
-    // Like how linux has /boot/efi
-    root_dir.create_dir("boot");
-    root_dir.create_dir("boot/efi/");
-
     // Copy the kernel file to /boot/efi/kenrel.elf
-    let mut kernel_elf = root_dir.create_file("boot/efi/kernel.elf").unwrap();
+    let mut kernel_elf = root_dir.create_file("kernel.elf").unwrap();
     io::copy(&mut fs::File::open(&kernel_file).unwrap(), &mut kernel_elf).unwrap();
 
     if arch == String::from("x86") {
