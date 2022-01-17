@@ -1,6 +1,6 @@
 use std::{fs, io, path::Path};
 
-fn create_fat_filesystem(fat_path: &Path, efi_file: &Path, arch: String) {
+fn create_fat_filesystem(fat_path: &Path, efi_file: &Path, kernel_file: &Path, arch: String) {
     // retrieve size of `.efi` file and round it up
     let efi_size = fs::metadata(&efi_file).unwrap().len();
     let mb = 1024 * 1024; // size of a megabyte
@@ -26,6 +26,15 @@ fn create_fat_filesystem(fat_path: &Path, efi_file: &Path, arch: String) {
     let root_dir = filesystem.root_dir();
     root_dir.create_dir("efi").unwrap();
     root_dir.create_dir("efi/boot").unwrap();
+
+    // Like how linux has /boot/efi
+    root_dir.create_dir("boot");
+    root_dir.create_dir("boot/efi/");
+
+    // Copy the kernel file to /boot/efi/kenrel.elf
+    let mut kernel_elf = root_dir.create_file("boot/efi/kernel.elf").unwrap();
+    io::copy(&mut fs::File::open(&kernel_file).unwrap(), &mut kernel_elf).unwrap();
+
     if arch == String::from("x86") {
         let mut bootx64 = root_dir.create_file("efi/boot/bootx64.efi").unwrap();
         bootx64.truncate().unwrap();
@@ -48,23 +57,23 @@ use std::process::exit;
 
 fn main() {
     println!("Creating bootable UEFI image...");
-    // take efi file path as command line argument
+
     let mut args = std::env::args();
     let _exe_name = args.next().unwrap();
     let efi_path = PathBuf::from(args.next()
         .expect("path to `.efi` files must be given as argument"));
+    let kernel_path = PathBuf::from(args.next()
+        .expect("path to kernel file mut be given as argument"));
 
     let arch = args.next().unwrap();
 
-    println!("Creating image from {:?}...", efi_path);
+    println!("Creating image from {:?} for {:?}...", efi_path, kernel_path);
 
     let fat_path = efi_path.with_extension("fat");
-    let disk_path = fat_path.with_extension("img");
 
     println!("Creating FAT file system...");
-    create_fat_filesystem(&fat_path, &efi_path, arch);
+    create_fat_filesystem(&fat_path, &efi_path, &kernel_path, arch);
 
     println!("Created images:");
     println!("    FAT image: {:?}", efi_path.with_extension("fat"));
-    println!("    Image: {:?}", efi_path.with_extension("img"));
 }
